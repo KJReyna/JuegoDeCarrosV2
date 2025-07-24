@@ -1,0 +1,51 @@
+# IntelliJ IDEA files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Compiled output
+out/
+build/
+target/
+
+# Dependencies (if using Maven/Gradle, otherwise not strictly needed for simple projects)
+.gradle/
+/gradle/wrapper/gradle-wrapper.jar
+/target/
+/bin/
+
+# Maven stuff
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Java class files
+*.class
+
+# Log files
+*.log
+
+# Mac specific files
+.DS_Store
+
+# Thumbnails for Windows
+Thumbs.db
+
+# Jar and War files
+*.jar
+*.war
+
+# Compiled resource files (might be needed if you have complex build processes)
+*.class
+
+# Other temporary files
+*.tmp
+*.bak
+*.swp
+*~.
