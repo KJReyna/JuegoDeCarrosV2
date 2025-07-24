@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Collections; // Para Collections.shuffle
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -41,7 +41,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private boolean gameStarted = false;
     private int currentLevelNumber;
 
-    // ¡NUEVO! Para controlar la generación de oleadas de obstáculos
     private long lastObstacleSpawnTime;
 
     /**
@@ -53,7 +52,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         setPreferredSize(new Dimension(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT));
         setBackground(GameConstants.GRASS_COLOR);
         setFocusable(true);
-        setFocusTraversalKeysEnabled(false); // Deshabilita las teclas de navegación de foco
+        setFocusTraversalKeysEnabled(false);
 
         random = new Random();
         road = new Road();
@@ -61,7 +60,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         gameTimer = new Timer(GameConstants.DELAY, this);
 
-        resetGame(1); // Inicializa con el Nivel 1
+        resetGame(1);
     }
 
     /**
@@ -75,15 +74,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         score = 0;
         currentProgress = 0;
         gameStarted = false;
-        lastObstacleSpawnTime = System.currentTimeMillis(); // Reinicia el tiempo de generación de obstáculos
+        lastObstacleSpawnTime = System.currentTimeMillis();
 
-        // ¡MODIFICADO! Asignación de longitud del nivel usando las constantes
-        if (level == 0) { // Modo infinito
-            currentLevelLength = GameConstants.LEVEL_LENGTHS[0]; // Integer.MAX_VALUE
+        if (level == 0) {
+            currentLevelLength = GameConstants.LEVEL_LENGTHS[0];
         } else if (level >= 1 && level < GameConstants.LEVEL_LENGTHS.length) {
             currentLevelLength = GameConstants.LEVEL_LENGTHS[level];
         } else {
-            // Nivel inválido, por seguridad se usa la longitud del Nivel 1
             System.err.println("Nivel inválido: " + level + ". Usando longitud de Nivel 1.");
             currentLevelLength = GameConstants.LEVEL_LENGTHS[1];
         }
@@ -108,11 +105,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         gameTimer.stop();
     }
 
-    /**
-     * Este método se llama en cada "tick" del Timer del juego.
-     * Contiene la lógica principal de actualización y redibujado.
-     * @param e El evento de acción del Timer.
-     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (!gameStarted) {
@@ -124,25 +116,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         repaint();
     }
 
-    /**
-     * Contiene toda la lógica de actualización del estado del juego:
-     * movimiento, generación de obstáculos, colisiones, puntaje y progreso.
-     */
     private void updateGame() {
-        // Mueve el camino y los obstáculos
         road.move(GameConstants.GAME_SPEED_BASE);
         for (ObstacleCar car : obstacleCars) {
             car.move(GameConstants.GAME_SPEED_BASE);
         }
 
-        // ¡MODIFICADO! Llama a la nueva lógica de generación de oleadas
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastObstacleSpawnTime >= GameConstants.OBSTACLE_SPAWN_INTERVAL_MS) {
-            generateObstaclesWave(); // Genera una nueva oleada de autos
+            generateObstaclesWave();
             lastObstacleSpawnTime = currentTime;
         }
 
-        // Elimina los obstáculos que han salido de la pantalla
         Iterator<ObstacleCar> iterator = obstacleCars.iterator();
         while (iterator.hasNext()) {
             ObstacleCar car = iterator.next();
@@ -151,7 +136,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        // Detección de colisiones
         for (ObstacleCar car : obstacleCars) {
             if (playerCar.checkCollision(car)) {
                 gameTimer.stop();
@@ -160,7 +144,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        // Actualiza el puntaje
         if (gameStartTime == 0) {
             gameStartTime = currentTime;
             lastScoreTime = currentTime;
@@ -170,7 +153,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             lastScoreTime = currentTime;
         }
 
-        // Actualiza el progreso y verifica la victoria
         currentProgress += GameConstants.GAME_SPEED_BASE;
         if (currentLevelLength != Integer.MAX_VALUE && currentProgress >= currentLevelLength) {
             gameTimer.stop();
@@ -178,52 +160,45 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    /**
-     * ¡NUEVO! Genera una "oleada" de obstáculos en el camino.
-     * Asegura que siempre haya al menos un carril libre para pasar.
-     */
     private void generateObstaclesWave() {
-        // Determina cuántos carriles se bloquearán en esta oleada.
-        // Se bloquearán entre 1 y (NUM_LANES - MIN_LANES_FREE_IN_WAVE) carriles.
-        // Ej: Si NUM_LANES=3 y MIN_LANES_FREE_IN_WAVE=1, bloqueará entre 1 y 2 carriles.
         int maxLanesToBlock = GameConstants.NUM_LANES - GameConstants.MIN_LANES_FREE_IN_WAVE;
-        if (maxLanesToBlock <= 0) { // Si solo hay 1 carril, o la lógica es mala, no bloquear nada
+        if (maxLanesToBlock <= 0) {
             return;
         }
-        int lanesToBlock = random.nextInt(maxLanesToBlock) + 1; // Genera entre 1 y `maxLanesToBlock` autos
+        int lanesToBlock = random.nextInt(maxLanesToBlock) + 1;
 
-        // Crea una lista de todos los carriles disponibles y la mezcla
         List<Integer> availableLanes = new ArrayList<>();
         for (int i = 0; i < GameConstants.NUM_LANES; i++) {
             availableLanes.add(i);
         }
-        Collections.shuffle(availableLanes, random); // Mezcla aleatoriamente los carriles
+        Collections.shuffle(availableLanes, random);
 
-        // Bloquea los primeros 'lanesToBlock' carriles de la lista mezclada
         for (int i = 0; i < lanesToBlock; i++) {
-            int lane = availableLanes.get(i); // Obtiene un carril aleatorio y único
-            // Calcula la posición X para el auto en el carril elegido
+            int lane = availableLanes.get(i);
             int startX = (GameConstants.GAME_WIDTH / 6) + (lane * GameConstants.LANE_WIDTH) + (GameConstants.LANE_WIDTH / 2) - (GameConstants.CAR_WIDTH / 2);
-            // Añade el nuevo auto obstáculo justo por encima de la pantalla
             obstacleCars.add(new ObstacleCar(startX, -GameConstants.CAR_HEIGHT, getRandomObstacleColor()));
         }
     }
 
     /**
-     * Devuelve un color aleatorio para los autos enemigos.
+     * Devuelve un color aleatorio para los autos enemigos, eligiendo entre colores básicos.
      * @return Un objeto Color.
      */
     private Color getRandomObstacleColor() {
-        Color[] colors = {Color.GREEN, Color.BLUE, Color.MAGENTA, Color.ORANGE, Color.CYAN, Color.WHITE};
+        // Colores que se usarán para los obstáculos geométricos.
+        Color[] colors = {
+                Color.GREEN,
+                Color.BLUE,
+                Color.MAGENTA,
+                Color.YELLOW,
+                Color.CYAN,
+                Color.BLACK,
+                Color.RED // También puedes añadir RED como color de obstáculo
+        };
         return colors[random.nextInt(colors.length)];
     }
 
-    /**
-     * Este método se encarga de dibujar todos los elementos gráficos del juego.
-     * @param g El objeto Graphics usado para dibujar.
-     */
-    @Override
-    protected void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
@@ -235,7 +210,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             g2d.setFont(new Font("Arial", Font.BOLD, 72));
             drawCenteredString(g2d, "JUGAR", GameConstants.GAME_HEIGHT / 2 - 50);
             g2d.setFont(new Font("Arial", Font.PLAIN, 24));
-            // Texto actualizado para la tecla 'E'
             drawCenteredString(g2d, "Presione E para empezar...", GameConstants.GAME_HEIGHT / 2 + 20);
             return;
         }
@@ -261,36 +235,22 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    /**
-     * Método de utilidad para dibujar una cadena de texto centrada horizontalmente.
-     * @param g2d El objeto Graphics2D para dibujar.
-     * @param text El texto a dibujar.
-     * @param y La coordenada Y para el texto.
-     */
     private void drawCenteredString(Graphics2D g2d, String text, int y) {
         FontMetrics metrics = g2d.getFontMetrics();
         int x = (GameConstants.GAME_WIDTH - metrics.stringWidth(text)) / 2;
         g2d.drawString(text, x, y);
     }
 
-    // --- Métodos de la interfaz KeyListener ---
-
-    /**
-     * Este método se llama cuando se presiona una tecla.
-     * Contiene la lógica para el movimiento del jugador y el inicio del juego.
-     * @param e El evento de teclado.
-     */
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println("GamePanel: Tecla presionada: " + KeyEvent.getKeyText(e.getKeyCode()) + " (KeyCode: " + e.getKeyCode() + ")"); // Debugging
+        System.out.println("GamePanel: Tecla presionada: " + KeyEvent.getKeyText(e.getKeyCode()) + " (KeyCode: " + e.getKeyCode() + ")");
         if (!gameStarted) {
-            // Verifica KeyEvent.VK_E para iniciar el juego
             if (e.getKeyCode() == KeyEvent.VK_E) {
                 System.out.println("GamePanel: Tecla 'E' detectada. Iniciando juego.");
                 gameStarted = true;
                 gameStartTime = System.currentTimeMillis();
                 lastScoreTime = gameStartTime;
-                repaint(); // Forzar un repaint para que la pantalla de juego real aparezca inmediatamente
+                repaint();
             }
         } else {
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -301,41 +261,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    /**
-     * Este método se llama cuando se suelta una tecla.
-     * No es esencial para este tipo de juego, así que se deja vacío.
-     * @param e El evento de teclado.
-     */
     @Override
     public void keyReleased(KeyEvent e) {
-        // No se necesita lógica aquí.
     }
 
-    /**
-     * Este método se llama cuando se escribe (pulsa y suelta) una tecla.
-     * Generalmente no se usa para control de juegos en tiempo real, se deja vacío.
-     * @param e El evento de teclado.
-     */
     @Override
     public void keyTyped(KeyEvent e) {
-        // No se necesita lógica aquí.
     }
 
-    // --- Getters para acceder al estado del juego desde otras clases ---
-
-    /**
-     * Obtiene el puntaje actual del juego.
-     * @return El puntaje actual.
-     */
     public int getScore() {
         return score;
     }
 
-    /**
-     * Obtiene el número del nivel que se está jugando actualmente.
-     * Útil para que la pantalla de derrota sepa qué nivel reintentar.
-     * @return El número del nivel.
-     */
     public int getCurrentLevelNumber() {
         return currentLevelNumber;
     }

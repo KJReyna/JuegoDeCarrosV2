@@ -1,83 +1,77 @@
-// com.tuproyecto.cagaroad.panels.VictoryPanel.java
 package com.tuproyecto.cagaroad.panels;
 
 import com.tuproyecto.cagaroad.GameFrame;
 import com.tuproyecto.cagaroad.GameState;
-import com.tuproyecto.cagaroad.gameobjects.PlayerCar; // Si quieres dibujar el coche del jugador
 import com.tuproyecto.cagaroad.utils.GameConstants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+// Eliminado: import java.awt.image.BufferedImage;
+// Eliminado: import java.io.IOException;
+// Eliminado: import com.tuproyecto.cagaroad.utils.AssetLoader;
 
+/**
+ * Representa la pantalla de victoria del juego, mostrada al completar un nivel.
+ * Muestra un mensaje de victoria, el puntaje final y una opción para volver al menú.
+ */
 public class VictoryPanel extends JPanel {
 
     private GameFrame gameFrame;
     private JLabel victoryLabel;
-    private JLabel reachedBathroomLabel; // Para el mensaje "Has llegado al baño"
-    private JLabel scoreLabel; // Para mostrar el puntaje
+    private JLabel reachedBathroomLabel;
+    private JLabel scoreLabel;
     private JLabel backToMenuLabel;
 
     public VictoryPanel(GameFrame gameFrame) {
         this.gameFrame = gameFrame;
         setPreferredSize(new Dimension(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT));
-        setBackground(new Color(50, 100, 50)); // Un verde que sugiere victoria
-        setLayout(new GridBagLayout()); // Para centrar los componentes
+        setBackground(new Color(50, 100, 50));
+        setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER; // Cada componente en una nueva fila
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(10, 0, 10, 0); // Espacio entre componentes
+        gbc.insets = new Insets(10, 0, 10, 0);
 
-        // Etiqueta de victoria
         victoryLabel = new JLabel("VICTORIA");
         victoryLabel.setFont(new Font("Arial", Font.BOLD, 100));
         victoryLabel.setForeground(Color.WHITE);
-        gbc.insets = new Insets(0, 0, 30, 0); // Espacio después de la victoria
+        gbc.insets = new Insets(0, 0, 30, 0);
         add(victoryLabel, gbc);
 
-        // Mensaje "Has llegado al baño"
         reachedBathroomLabel = new JLabel("Has llegado al baño");
         reachedBathroomLabel.setFont(new Font("Arial", Font.PLAIN, 36));
         reachedBathroomLabel.setForeground(Color.WHITE);
         gbc.insets = new Insets(0, 0, 20, 0);
         add(reachedBathroomLabel, gbc);
 
-        // Puntaje final (el puntaje actual se obtendrá cuando se muestre el panel)
-        scoreLabel = new JLabel("Puntaje: ???"); // Se actualizará al mostrar el panel
+        scoreLabel = new JLabel("Puntaje: ???");
         scoreLabel.setFont(new Font("Arial", Font.PLAIN, 36));
         scoreLabel.setForeground(Color.WHITE);
         gbc.insets = new Insets(0, 0, 50, 0);
         add(scoreLabel, gbc);
 
-        // Opción: Volver al menú
         backToMenuLabel = createOptionLabel("Volver al Menu");
         add(backToMenuLabel, gbc);
 
-        // Listener para el botón de volver al menú
         backToMenuLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 gameFrame.setGameState(GameState.MENU);
             }
             @Override
-            public void mouseEntered(MouseEvent e) {
-                backToMenuLabel.setForeground(Color.CYAN);
-            }
+            public void mouseEntered(MouseEvent e) { backToMenuLabel.setForeground(Color.CYAN); }
             @Override
-            public void mouseExited(MouseEvent e) {
-                backToMenuLabel.setForeground(Color.WHITE);
-            }
+            public void mouseExited(MouseEvent e) { backToMenuLabel.setForeground(Color.WHITE); }
         });
     }
 
-    // Método que se puede llamar para actualizar el puntaje al mostrar el panel
     public void setFinalScore(int score) {
         scoreLabel.setText("Puntaje: " + score);
     }
 
-    // Método auxiliar para crear etiquetas de opción con un estilo común
     private JLabel createOptionLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.PLAIN, 36));
@@ -86,38 +80,62 @@ public class VictoryPanel extends JPanel {
         return label;
     }
 
+    /**
+     * Dibuja el contenido del panel, incluyendo la representación del "baño" y el coche del jugador.
+     * @param g El objeto Graphics usado para dibujar.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // Dibujar el "baño" como en tu imagen de concepto
-        int bathroomX = GameConstants.GAME_WIDTH / 2 - 50; // Centro del baño
-        int bathroomY = GameConstants.GAME_HEIGHT - 200; // Posición vertical del baño
+        // Dibujar el "baño"
+        int bathroomWidth = 100;
+        int bathroomHeight = 150;
+        int bathroomX = GameConstants.GAME_WIDTH / 2 - bathroomWidth / 2;
+        int bathroomY = GameConstants.GAME_HEIGHT - bathroomHeight - 50;
 
-        // Edificio principal (marrón)
-        g2d.setColor(new Color(139, 69, 19)); // Marrón
-        g2d.fillRect(bathroomX, bathroomY, 100, 150);
+        g2d.setColor(new Color(139, 69, 19));
+        g2d.fillRect(bathroomX, bathroomY, bathroomWidth, bathroomHeight);
 
-        // Techo (marrón más oscuro)
         g2d.setColor(new Color(101, 67, 33));
-        g2d.fillRect(bathroomX - 10, bathroomY - 20, 120, 30);
+        g2d.fillRect(bathroomX - 10, bathroomY - 20, bathroomWidth + 20, 30);
 
-        // Puerta (azul claro)
         g2d.setColor(Color.BLUE);
-        g2d.fillRect(bathroomX + 30, bathroomY + 70, 40, 80);
+        g2d.fillRect(bathroomX + (bathroomWidth / 2) - 20, bathroomY + (bathroomHeight / 2), 40, bathroomHeight / 2);
 
-        // Ventana (amarilla)
-        g2d.setColor(Color.YELLOW);
-        g2d.fillRect(bathroomX + 20, bathroomY + 20, 20, 20);
-
-        // Letrero "WC"
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 20));
-        g2d.drawString("WC", bathroomX + 35, bathroomY + 115);
+        g2d.drawString("WC", bathroomX + (bathroomWidth / 2) - 15, bathroomY + (bathroomHeight / 2) + 30);
 
-        // Opcional: dibujar el coche del jugador llegando al baño
-        // Esto requeriría una instancia de PlayerCar o un método drawCar aquí
-        // Por simplicidad, puedes omitir dibujar el auto aquí o crear un método auxiliar.
+        // Dibuja el coche del jugador llegando al baño usando formas geométricas.
+        Color playerColor = gameFrame.getPlayerCarColor();
+        drawGenericCar(g2d, playerColor, bathroomX + bathroomWidth / 2 - GameConstants.CAR_WIDTH / 2, bathroomY + bathroomHeight - GameConstants.CAR_HEIGHT + 10);
+    }
+
+    /**
+     * Método auxiliar para dibujar un coche genérico (usando formas geométricas).
+     * @param g2d El objeto Graphics2D usado para dibujar.
+     * @param bodyColor El color principal del cuerpo del coche.
+     * @param x La coordenada X de la esquina superior izquierda del coche.
+     * @param y La coordenada Y de la esquina superior izquierda del coche.
+     */
+    private void drawGenericCar(Graphics2D g2d, Color bodyColor, int x, int y) {
+        g2d.setColor(bodyColor);
+        g2d.fillRect(x, y, GameConstants.CAR_WIDTH, GameConstants.CAR_HEIGHT);
+
+        g2d.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(2));
+        g2d.drawRect(x, y, GameConstants.CAR_WIDTH, GameConstants.CAR_HEIGHT);
+
+        g2d.setColor(new Color(135, 206, 235));
+        g2d.fillRect(x + 5, y + 10, GameConstants.CAR_WIDTH - 10, GameConstants.CAR_HEIGHT / 4);
+        g2d.fillRect(x + 5, y + GameConstants.CAR_HEIGHT - GameConstants.CAR_HEIGHT / 4 - 10, GameConstants.CAR_WIDTH - 10, GameConstants.CAR_HEIGHT / 4);
+
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(x - 5, y + 10, 10, 20);
+        g2d.fillRect(x + GameConstants.CAR_WIDTH - 5, y + 10, 10, 20);
+        g2d.fillRect(x - 5, y + GameConstants.CAR_HEIGHT - 30, 10, 20);
+        g2d.fillRect(x + GameConstants.CAR_WIDTH - 5, y + GameConstants.CAR_HEIGHT - 30, 10, 20);
     }
 }

@@ -5,8 +5,8 @@ import com.tuproyecto.cagaroad.utils.GameConstants;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent; // Asegúrate de que esto esté importado
-import java.util.Set; // Asegúrate de que esto esté importado
+import java.awt.event.KeyEvent;
+import java.util.Set;
 
 /**
  * GameFrame es la ventana principal (JFrame) de la aplicación CAGAROAD.
@@ -24,7 +24,7 @@ public class GameFrame extends JFrame {
     private CustomizePanel customizePanel;
     private GamePanel gamePanel;
     private VictoryPanel victoryPanel;
-    private DefeatPanel defeatPanel;
+    private DefeatPanel defeatPanel; // Referencia a DefeatPanel
 
     private GameState currentGameState;
 
@@ -38,12 +38,8 @@ public class GameFrame extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
 
-        // --- CORRECCIONES CLAVE PARA EL FOCO EN EL JFrame ---
-        setFocusable(true); // Hace que el JFrame sea capaz de recibir el foco
-        // Deshabilita las teclas de navegación de foco predeterminadas de Swing (ej. TAB, SHIFT, ESPACIO).
-        // Esto es CRUCIAL para que los juegos capturen eventos de teclado directamente.
+        setFocusable(true);
         setFocusTraversalKeysEnabled(false);
-        // -----------------------------------------------------
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
@@ -53,9 +49,9 @@ public class GameFrame extends JFrame {
         mainMenuPanel = new MainMenuPanel(this);
         levelSelectPanel = new LevelSelectPanel(this);
         customizePanel = new CustomizePanel(this);
-        gamePanel = new GamePanel(this); // GamePanel ya implementa KeyListener
+        gamePanel = new GamePanel(this);
         victoryPanel = new VictoryPanel(this);
-        defeatPanel = new DefeatPanel(this);
+        defeatPanel = new DefeatPanel(this); // Inicializa DefeatPanel
 
         mainPanel.add(splashPanel, GameState.SPLASH.name());
         mainPanel.add(mainMenuPanel, GameState.MENU.name());
@@ -77,48 +73,30 @@ public class GameFrame extends JFrame {
         System.out.println("GameFrame: Cambiando estado a: " + newState.name());
         this.currentGameState = newState;
 
-        // Siempre remueve el KeyListener de GamePanel antes de cualquier cambio.
-        // Esto previene duplicados o listeners activos en paneles incorrectos.
-        // Si el GamePanel no es un KeyListener para este JFrame (porque no ha sido añadido o ya se removió),
-        // este método simplemente no hace nada, lo cual es seguro.
-        removeKeyListener(gamePanel); // Siempre remueve el listener
+        removeKeyListener(gamePanel);
 
-        // Muestra el panel asociado al nuevo estado utilizando CardLayout
         cardLayout.show(mainPanel, newState.name());
 
-        // Manejo especial para el estado PLAYING (el juego en sí)
         if (newState == GameState.PLAYING) {
-            // 1. Añade el GamePanel como KeyListener a este JFrame.
             addKeyListener(gamePanel);
-
-            // 2. Inicia el bucle de juego del GamePanel.
             gamePanel.startGame();
-
-            // 3. ¡CORRECCIONES CLAVE PARA ASEGURAR EL FOCO!
-            // Primero, solicita el foco para el JFrame completo.
-            // Esto asegura que la ventana principal esté activa y lista para recibir eventos.
             requestFocus();
 
-            // Luego, usa invokeLater para solicitar el foco en el GamePanel.
-            // Esto garantiza que la solicitud se procese después de que Swing haya
-            // terminado de organizar y dibujar el GamePanel, lo que lo hace más fiable.
             SwingUtilities.invokeLater(() -> {
                 gamePanel.requestFocusInWindow();
-                // Mensajes de depuración para verificar el foco
                 System.out.println("GameFrame: requestFocusInWindow() invocado para GamePanel. GamePanel is focus owner: " + gamePanel.isFocusOwner());
                 System.out.println("GameFrame: Current focus owner is: " + KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner());
             });
         } else {
-            // Si salimos del estado PLAYING, detiene el bucle de juego del GamePanel.
             gamePanel.stopGame();
-            // El KeyListener ya se removió al inicio de este método.
         }
 
-        // Otros manejos específicos para cada estado:
         if (newState == GameState.LEVEL_SELECT) {
             levelSelectPanel.resetSelection();
         } else if (newState == GameState.VICTORY) {
             victoryPanel.setFinalScore(gamePanel.getScore());
+        } else if (newState == GameState.DEFEAT) { // ¡NUEVO! Pasa el puntaje a DefeatPanel
+            defeatPanel.setFinalScore(gamePanel.getScore());
         }
     }
 

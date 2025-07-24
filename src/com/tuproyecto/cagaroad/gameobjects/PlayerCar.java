@@ -3,15 +3,19 @@ package com.tuproyecto.cagaroad.gameobjects;
 import com.tuproyecto.cagaroad.utils.GameConstants;
 
 import java.awt.*;
+// Eliminado: import java.awt.image.BufferedImage;
+// Eliminado: import java.io.IOException;
+// Eliminado: import com.tuproyecto.cagaroad.utils.AssetLoader;
 
 /**
  * Representa el coche del jugador en el juego.
  * Gestiona su posición, color, movimiento entre carriles y detección de colisiones.
  */
 public class PlayerCar {
-    private int x, y; // Coordenadas X e Y de la esquina superior izquierda del coche
-    private Color color; // Color del cuerpo del coche
-    private int lane; // El carril actual del coche (0, 1, 2, etc.)
+    private int x, y;
+    private Color color;
+    private int lane;
+    // Eliminado: private BufferedImage carImage;
 
     /**
      * Constructor del PlayerCar.
@@ -27,14 +31,14 @@ public class PlayerCar {
      */
     public void reset(Color newColor) {
         this.color = newColor;
-        this.lane = GameConstants.NUM_LANES / 2; // El coche empieza en el carril central
+        // Eliminado: loadImageForColor(newColor);
+        this.lane = GameConstants.NUM_LANES / 2;
         this.x = (GameConstants.GAME_WIDTH / 6) + (lane * GameConstants.LANE_WIDTH) + (GameConstants.LANE_WIDTH / 2) - (GameConstants.CAR_WIDTH / 2);
-        this.y = GameConstants.GAME_HEIGHT - GameConstants.CAR_HEIGHT - 50; // Posición fija en la parte inferior de la pantalla
+        this.y = GameConstants.GAME_HEIGHT - GameConstants.CAR_HEIGHT - 50;
     }
 
-    /**
-     * Mueve el coche del jugador un carril a la izquierda, si es posible.
-     */
+    // Eliminado: private void loadImageForColor(Color carColor) {...}
+
     public void moveLeft() {
         if (lane > 0) {
             lane--;
@@ -42,9 +46,6 @@ public class PlayerCar {
         }
     }
 
-    /**
-     * Mueve el coche del jugador un carril a la derecha, si es posible.
-     */
     public void moveRight() {
         if (lane < GameConstants.NUM_LANES - 1) {
             lane++;
@@ -53,25 +54,23 @@ public class PlayerCar {
     }
 
     /**
-     * Dibuja el coche del jugador en su posición actual.
+     * Dibuja el coche del jugador usando formas geométricas.
      * @param g2d El objeto Graphics2D usado para dibujar.
      */
-    public void draw(Graphics2D g2d) {
-        // Dibuja el cuerpo principal del coche
+    public void draw(Graphics2D g2d) { // Asegúrate de que sea Graphics2D
         g2d.setColor(color);
-        g2d.fillRect(x, y, GameConstants.CAR_WIDTH, GameConstants.CAR_HEIGHT);
+        g2d.fillRect(x, y, GameConstants.CAR_WIDTH, GameConstants.CAR_HEIGHT); // Cuerpo del coche
 
-        // Dibuja un borde negro alrededor del cuerpo del coche
         g2d.setColor(Color.BLACK);
-        g2d.setStroke(new BasicStroke(2)); // Establece un grosor de línea de 2 píxeles
-        g2d.drawRect(x, y, GameConstants.CAR_WIDTH, GameConstants.CAR_HEIGHT);
+        g2d.setStroke(new BasicStroke(2)); // Borde más grueso
+        g2d.drawRect(x, y, GameConstants.CAR_WIDTH, GameConstants.CAR_HEIGHT); // Borde del cuerpo
 
-        // Dibuja las ventanas del coche
-        g2d.setColor(new Color(135, 206, 235)); // Azul cielo para las ventanas
+        // Ventanas
+        g2d.setColor(new Color(135, 206, 235)); // Azul cielo para ventanas
         g2d.fillRect(x + 5, y + 10, GameConstants.CAR_WIDTH - 10, GameConstants.CAR_HEIGHT / 4); // Ventana frontal
         g2d.fillRect(x + 5, y + GameConstants.CAR_HEIGHT - GameConstants.CAR_HEIGHT / 4 - 10, GameConstants.CAR_WIDTH - 10, GameConstants.CAR_HEIGHT / 4); // Ventana trasera
 
-        // Dibuja las ruedas del coche
+        // Ruedas
         g2d.setColor(Color.BLACK);
         g2d.fillRect(x - 5, y + 10, 10, 20); // Rueda delantera izquierda
         g2d.fillRect(x + GameConstants.CAR_WIDTH - 5, y + 10, 10, 20); // Rueda delantera derecha

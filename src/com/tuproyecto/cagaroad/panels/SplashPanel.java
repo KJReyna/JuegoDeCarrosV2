@@ -35,7 +35,7 @@ public class SplashPanel extends JPanel {
         }
 
         // Después de un tiempo, cambiar al menú principal
-        Timer timer = new Timer(3000, new ActionListener() { // 3 segundos de splash
+        Timer timer = new Timer(5000, new ActionListener() { // 3 segundos de splash
             @Override
             public void actionPerformed(ActionEvent e) {
                 gameFrame.setGameState(GameState.MENU);
@@ -55,7 +55,7 @@ public class SplashPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         g2d.setColor(Color.WHITE);
-        g2d.setFont(new Font("Arial", Font.BOLD, 36));
+        g2d.setFont(new Font("Arial", Font.BOLD, 30));
         drawCenteredString(g2d, "UNIVERSIDAD TECNOLÓGICA DE PANAMÁ", GameConstants.GAME_HEIGHT / 4 - 30);
         drawCenteredString(g2d, "FACULTAD DE INGENIERÍA DE SISTEMAS COMPUTACIONALES", GameConstants.GAME_HEIGHT / 4);
         drawCenteredString(g2d, "DEPARTAMENTO DE PROGRAMACIÓN", GameConstants.GAME_HEIGHT / 4 + 30);
@@ -64,8 +64,8 @@ public class SplashPanel extends JPanel {
         g2d.setFont(new Font("Arial", Font.PLAIN, 20));
         drawCenteredString(g2d, "Facilitador(a): Rodrigo Yángüez", GameConstants.GAME_HEIGHT / 2);
         drawCenteredString(g2d, "Estudiante(s): [Nombres de los integrantes]", GameConstants.GAME_HEIGHT / 2 + 30);
-        drawCenteredString(g2d, "Grupo: [Tu Grupo]", GameConstants.GAME_HEIGHT / 2 + 60);
-        drawCenteredString(g2d, "Fecha: I Semestre 2025", GameConstants.GAME_HEIGHT / 2 + 90);
+        drawCenteredString(g2d, "Grupo: 1SF125", GameConstants.GAME_HEIGHT / 2 + 60);
+        //drawCenteredString(g2d, "Fecha: I Semestre 2025", GameConstants.GAME_HEIGHT / 2 + 90);
 
         // Dibujar logos (ajusta posiciones y tamaños)
         if (utpLogo != null) {
