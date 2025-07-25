@@ -23,19 +23,9 @@ public class SplashPanel extends JPanel {
         setPreferredSize(new Dimension(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT));
         setBackground(Color.BLUE); // Un color base
 
-        // Cargar logos
-        try {
-            utpLogo = AssetLoader.loadImage("utp_logo.png"); // Asegúrate de tener estas imágenes en tu proyecto
-            fiscLogo = AssetLoader.loadImage("fisc_logo.png");
-        } catch (Exception e) {
-            System.err.println("Error al cargar logos: " + e.getMessage());
-            // Manejo de excepción: Si los logos no cargan, se dibuja un placeholder
-            utpLogo = null;
-            fiscLogo = null;
-        }
 
         // Después de un tiempo, cambiar al menú principal
-        Timer timer = new Timer(5000, new ActionListener() { // 3 segundos de splash
+        Timer timer = new Timer(10000, new ActionListener() { // 3 segundos de splash
             @Override
             public void actionPerformed(ActionEvent e) {
                 gameFrame.setGameState(GameState.MENU);
@@ -55,7 +45,7 @@ public class SplashPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         g2d.setColor(Color.WHITE);
-        g2d.setFont(new Font("Arial", Font.BOLD, 30));
+        g2d.setFont(new Font("Arial", Font.BOLD, 25));
         drawCenteredString(g2d, "UNIVERSIDAD TECNOLÓGICA DE PANAMÁ", GameConstants.GAME_HEIGHT / 4 - 30);
         drawCenteredString(g2d, "FACULTAD DE INGENIERÍA DE SISTEMAS COMPUTACIONALES", GameConstants.GAME_HEIGHT / 4);
         drawCenteredString(g2d, "DEPARTAMENTO DE PROGRAMACIÓN", GameConstants.GAME_HEIGHT / 4 + 30);
@@ -63,21 +53,10 @@ public class SplashPanel extends JPanel {
 
         g2d.setFont(new Font("Arial", Font.PLAIN, 20));
         drawCenteredString(g2d, "Facilitador(a): Rodrigo Yángüez", GameConstants.GAME_HEIGHT / 2);
-        drawCenteredString(g2d, "Estudiante(s): [Nombres de los integrantes]", GameConstants.GAME_HEIGHT / 2 + 30);
+        drawCenteredString(g2d, "Estudiantes: Kahil Reyna, Rogelin, Mario", GameConstants.GAME_HEIGHT / 2 + 30);
         drawCenteredString(g2d, "Grupo: 1SF125", GameConstants.GAME_HEIGHT / 2 + 60);
         //drawCenteredString(g2d, "Fecha: I Semestre 2025", GameConstants.GAME_HEIGHT / 2 + 90);
 
-        // Dibujar logos (ajusta posiciones y tamaños)
-        if (utpLogo != null) {
-            g2d.drawImage(utpLogo, GameConstants.GAME_WIDTH / 4 - utpLogo.getWidth() / 2, 50, null);
-        } else {
-            g2d.drawString("UTP Logo Missing", GameConstants.GAME_WIDTH / 4, 100);
-        }
-        if (fiscLogo != null) {
-            g2d.drawImage(fiscLogo, 3 * GameConstants.GAME_WIDTH / 4 - fiscLogo.getWidth() / 2, 50, null);
-        } else {
-            g2d.drawString("FISC Logo Missing", 3 * GameConstants.GAME_WIDTH / 4, 100);
-        }
     }
 
     // Método de utilidad para centrar texto

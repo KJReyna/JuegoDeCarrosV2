@@ -8,9 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-// Eliminado: import java.awt.image.BufferedImage;
-// Eliminado: import java.io.IOException;
-// Eliminado: import com.tuproyecto.cagaroad.utils.AssetLoader;
 
 /**
  * Representa la pantalla de victoria del juego, mostrada al completar un nivel.
@@ -110,7 +107,10 @@ public class VictoryPanel extends JPanel {
 
         // Dibuja el coche del jugador llegando al baño usando formas geométricas.
         Color playerColor = gameFrame.getPlayerCarColor();
-        drawGenericCar(g2d, playerColor, bathroomX + bathroomWidth / 2 - GameConstants.CAR_WIDTH / 2, bathroomY + bathroomHeight - GameConstants.CAR_HEIGHT + 10);
+        // ¡MODIFICADO! Ajustar la posición Y del coche para que el baño sea visible.
+        // El coche se dibujará 10 píxeles por debajo de la base del baño.
+        int carDrawY = bathroomY + bathroomHeight + 10;
+        drawGenericCar(g2d, playerColor, GameConstants.GAME_WIDTH / 2 - GameConstants.CAR_WIDTH / 2, carDrawY);
     }
 
     /**
