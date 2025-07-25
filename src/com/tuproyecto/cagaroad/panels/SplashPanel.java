@@ -53,7 +53,7 @@ public class SplashPanel extends JPanel {
 
         g2d.setFont(new Font("Arial", Font.PLAIN, 20));
         drawCenteredString(g2d, "Facilitador(a): Rodrigo Yángüez", GameConstants.GAME_HEIGHT / 2);
-        drawCenteredString(g2d, "Estudiantes: Kahil Reyna, Rogelin, Mario", GameConstants.GAME_HEIGHT / 2 + 30);
+        drawCenteredString(g2d, "Estudiantes: Kahil Reyna, Rogelin Cortez, Mario Guillen", GameConstants.GAME_HEIGHT / 2 + 30);
         drawCenteredString(g2d, "Grupo: 1SF125", GameConstants.GAME_HEIGHT / 2 + 60);
         //drawCenteredString(g2d, "Fecha: I Semestre 2025", GameConstants.GAME_HEIGHT / 2 + 90);
 

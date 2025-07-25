@@ -8,9 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-// Eliminado: import java.awt.image.BufferedImage;
-// Eliminado: import java.io.IOException;
-// Eliminado: import com.tuproyecto.cagaroad.utils.AssetLoader;
 
 /**
  * Representa la pantalla de personalización del coche del jugador.
@@ -19,32 +16,34 @@ import java.awt.event.MouseEvent;
 public class CustomizePanel extends JPanel {
 
     private GameFrame gameFrame;
-    private Color selectedCarColor = Color.RED; // ¡VERIFICAR! Color inicial por defecto del coche
+    private Color selectedCarColor = Color.RED; // Color inicial por defecto del coche
     private JLabel backButton;
 
-    // Colores disponibles (eliminado Color.WHITE)
-    private final Color[] AVAILABLE_COLORS = {Color.BLACK, Color.RED, Color.YELLOW, Color.CYAN, Color.MAGENTA};
+    // Colores disponibles
+    private final Color[] AVAILABLE_COLORS = {
+            Color.BLACK, Color.RED, Color.YELLOW, Color.CYAN, Color.MAGENTA
+    };
 
-    // ¡NUEVO! Margen desde el borde izquierdo para los cuadros de color
+    // Margen desde el borde izquierdo para los cuadros de color
     private static final int COLOR_BOX_LEFT_MARGIN = 100;
 
-    /**
-     * Constructor del CustomizePanel.
-     * @param gameFrame La referencia al GameFrame para cambiar de estado.
-     */
     public CustomizePanel(GameFrame gameFrame) {
         this.gameFrame = gameFrame;
         setPreferredSize(new Dimension(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT));
-        setBackground(Color.DARK_GRAY);
-        setLayout(null); // Usamos un layout nulo para posicionar manualmente
+
+        setBackground(new Color(30, 30, 30)); // Fondo moderno
+        setBorder(BorderFactory.createLineBorder(new Color(70, 70, 70), 2));
+        setLayout(null);
 
         JLabel title = new JLabel("Selecciona un color");
-        title.setFont(new Font("Arial", Font.BOLD, 40));
+        title.setFont(new Font("Segoe UI", Font.BOLD, 42));
         title.setForeground(Color.WHITE);
-        title.setBounds((GameConstants.GAME_WIDTH - title.getPreferredSize().width) / 2, 50, title.getPreferredSize().width, 50);
+        title.setBounds((GameConstants.GAME_WIDTH - title.getPreferredSize().width) / 2,
+                50,
+                title.getPreferredSize().width,
+                50);
         add(title);
 
-        // ¡MODIFICADO! Usamos el nuevo margen para startX
         int startX = COLOR_BOX_LEFT_MARGIN;
         int startY = GameConstants.GAME_HEIGHT / 2 - 100;
         int colorBoxSize = 50;
@@ -52,7 +51,14 @@ public class CustomizePanel extends JPanel {
 
         for (int i = 0; i < AVAILABLE_COLORS.length; i++) {
             Color color = AVAILABLE_COLORS[i];
+
             JPanel colorBox = new JPanel() {
+                {
+                    setToolTipText("Haz clic para seleccionar este color");
+                    setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+                    setOpaque(false);
+                }
+
                 @Override
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
@@ -60,44 +66,54 @@ public class CustomizePanel extends JPanel {
                     g.fillRect(0, 0, getWidth(), getHeight());
                     if (color.equals(selectedCarColor)) {
                         g.setColor(Color.WHITE);
-                        ((Graphics2D)g).setStroke(new BasicStroke(3));
+                        ((Graphics2D) g).setStroke(new BasicStroke(3));
                         g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
                     }
                 }
             };
+
             colorBox.setBounds(startX, startY + i * (colorBoxSize + spacing), colorBoxSize, colorBoxSize);
             colorBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
             colorBox.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     selectedCarColor = color;
-                    repaint(); // Redibuja el panel para actualizar el coche de preview y la selección
+                    repaint();
                 }
             });
+
             add(colorBox);
         }
 
-        backButton = new JLabel("Volver al Menú");
-        backButton.setFont(new Font("Arial", Font.PLAIN, 24));
+        backButton = new JLabel("⮐ Volver al Menú");
+        backButton.setFont(new Font("Segoe UI", Font.PLAIN, 24));
         backButton.setForeground(Color.WHITE);
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        backButton.setBounds(
+                GameConstants.GAME_WIDTH / 2 - backButton.getPreferredSize().width / 2,
+                GameConstants.GAME_HEIGHT - 80,
+                backButton.getPreferredSize().width,
+                30
+        );
         backButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 gameFrame.setGameState(GameState.MENU);
             }
+
             @Override
-            public void mouseEntered(MouseEvent e) { backButton.setForeground(Color.RED); }
+            public void mouseEntered(MouseEvent e) {
+                backButton.setForeground(new Color(255, 100, 100));
+            }
+
             @Override
-            public void mouseExited(MouseEvent e) { backButton.setForeground(Color.WHITE); }
+            public void mouseExited(MouseEvent e) {
+                backButton.setForeground(Color.WHITE);
+            }
         });
-        backButton.setBounds(GameConstants.GAME_WIDTH / 2 - backButton.getPreferredSize().width / 2,
-                GameConstants.GAME_HEIGHT - 80,
-                backButton.getPreferredSize().width, 30);
+
         add(backButton);
 
-        // ¡NUEVO! Forzar el redibujado inicial para asegurar que el coche de preview se muestre
-        // con el color rojo por defecto al cargar el panel.
         repaint();
     }
 
@@ -108,10 +124,7 @@ public class CustomizePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Dibuja el auto del jugador con el color seleccionado usando formas geométricas
-        // Asegúrate de que el coche preview esté centrado a la derecha de los cuadros de color
-        // Calculamos la posición X para que el coche esté a la derecha de los cuadros y centrado verticalmente
-        int carPreviewX = COLOR_BOX_LEFT_MARGIN + 200; // Unos 200px a la derecha de los cuadros de color
+        int carPreviewX = COLOR_BOX_LEFT_MARGIN + 200;
         int carPreviewY = GameConstants.GAME_HEIGHT / 2 - GameConstants.CAR_HEIGHT / 2;
         drawCar((Graphics2D) g, selectedCarColor, carPreviewX, carPreviewY);
     }
@@ -126,7 +139,8 @@ public class CustomizePanel extends JPanel {
 
         g2d.setColor(new Color(135, 206, 235));
         g2d.fillRect(x + 5, y + 10, GameConstants.CAR_WIDTH - 10, GameConstants.CAR_HEIGHT / 4);
-        g2d.fillRect(x + 5, y + GameConstants.CAR_HEIGHT - GameConstants.CAR_HEIGHT / 4 - 10, GameConstants.CAR_WIDTH - 10, GameConstants.CAR_HEIGHT / 4);
+        g2d.fillRect(x + 5, y + GameConstants.CAR_HEIGHT - GameConstants.CAR_HEIGHT / 4 - 10,
+                GameConstants.CAR_WIDTH - 10, GameConstants.CAR_HEIGHT / 4);
 
         g2d.setColor(Color.BLACK);
         g2d.fillRect(x - 5, y + 10, 10, 20);

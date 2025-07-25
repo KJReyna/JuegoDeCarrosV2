@@ -10,5 +10,5 @@ public class Main {
             GameFrame gameFrame = new GameFrame();
             gameFrame.setVisible(true); // Hace visible la ventana
         });
-    }
-} //añadi esto nama pa ver como se agrega al commit
+    }}
+
