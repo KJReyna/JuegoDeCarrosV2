@@ -149,4 +149,4 @@ public class CustomizePanel extends JPanel {
         g2d.fillRect(x - 5, y + GameConstants.CAR_HEIGHT - 30, 10, 20);
         g2d.fillRect(x + GameConstants.CAR_WIDTH - 5, y + GameConstants.CAR_HEIGHT - 30, 10, 20);
     }
-}
+}//
