@@ -1,4 +1,3 @@
-// com.tuproyecto.cagaroad.panels.LevelSelectPanel.java
 package com.tuproyecto.cagaroad.panels;
 
 import com.tuproyecto.cagaroad.GameFrame;
@@ -9,104 +8,270 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+// No se necesita java.awt.geom.Rectangle2D directamente para esto,
+// Rectangle es suficiente y ya está importado por AWT.* en GameConstants.
 
+/**
+ * Representa la pantalla de selección de niveles del juego.
+ * Diseñado con un estilo consistente al menú principal, con botones interactivos y flotantes.
+ */
 public class LevelSelectPanel extends JPanel {
 
     private GameFrame gameFrame;
-    private JLabel level1Label, level2Label, level3Label;
-    private JLabel backButton; // Para volver al menú principal
 
-    // Fuentes para los niveles
-    private final Font NORMAL_FONT = new Font("Arial", Font.BOLD, 48);
-    private final Font HOVER_FONT = new Font("Arial", Font.BOLD, 72);
+    // Colores para el diseño (reutilizados del MainMenuPanel)
+    private static final Color SIGN_BROWN = new Color(139, 69, 19);
+    private static final Color SKY_BLUE = new Color(135, 206, 235);
+    private static final Color GRASS_GREEN = new Color(50, 150, 50);
+    private static final Color TITLE_ORANGE = new Color(255, 140, 0);
 
+    // Constantes específicas para el diseño de niveles
+    private static final int LEVEL_BUTTON_NORMAL_WIDTH = 150;
+    private static final int LEVEL_BUTTON_NORMAL_HEIGHT = 80;
+    private static final int LEVEL_BUTTON_HOVER_WIDTH = 180; // Ancho agrandado
+    private static final int LEVEL_BUTTON_HOVER_HEIGHT = 95; // Alto agrandado
+    private static final int HORIZONTAL_BUTTON_GAP = 30; // Espacio entre botones de nivel
+    private static final int LEVEL_TEXT_FONT_NORMAL_SIZE = 36;
+    private static final int LEVEL_TEXT_FONT_HOVER_SIZE = 42; // Tamaño de fuente agrandado
+
+    // ¡VERIFICADO! Tamaño fijo para el botón "Volver al Menú", no se agranda.
+    private static final int BACK_BUTTON_WIDTH = 200; // Más pequeño
+    private static final int BACK_BUTTON_HEIGHT = 50; // Más pequeño
+    private static final int BACK_BUTTON_FONT_SIZE = 24;
+
+    // Variables de estado para el hover
+    private int hoveredLevelIndex = -1; // -1 si ninguno, 0 para Nivel 1, 1 para Nivel 2, 2 para Nivel 3
+    private boolean hoveredBackButton = false;
+
+    // Rectángulos para detectar interacciones (se inicializan en el constructor)
+    private Rectangle[] levelButtonAreas;
+    private Rectangle backButtonArea;
+
+    // Dimensiones y posiciones del título "NIVELES"
+    private int levelsTitleSignX, levelsTitleSignY, levelsTitleSignWidth, levelsTitleSignHeight;
+
+    /**
+     * Constructor del LevelSelectPanel.
+     * @param gameFrame La referencia al GameFrame para cambiar de estado.
+     */
     public LevelSelectPanel(GameFrame gameFrame) {
         this.gameFrame = gameFrame;
         setPreferredSize(new Dimension(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT));
-        setBackground(new Color(23, 75, 96)); // Fondo similar al menú
-        setLayout(new GridBagLayout());
+        setLayout(null); // Usamos layout nulo para posicionar manualmente
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(20, 20, 20, 20); // Espacio entre los niveles
+        // --- Calcular dimensiones y posiciones del título "NIVELES" ---
+        Font titleFont = new Font("Arial", Font.BOLD, 70);
+        FontMetrics fmTitle = getFontMetrics(titleFont);
+        String titleText = "NIVELES";
+        levelsTitleSignWidth = fmTitle.stringWidth(titleText) + 60;
+        levelsTitleSignHeight = fmTitle.getHeight() + 20;
+        levelsTitleSignX = (GameConstants.GAME_WIDTH - levelsTitleSignWidth) / 2;
+        levelsTitleSignY = 50;
 
-        // Configuración de las etiquetas de nivel
-        level1Label = createLevelLabel("Nivel 1", 1);
-        level2Label = createLevelLabel("Nivel 2", 2);
-        level3Label = createLevelLabel("Nivel 3", 3);
+        // --- Calcular las áreas de los botones de nivel (para detección de mouse) ---
+        levelButtonAreas = new Rectangle[3];
+        int totalLevelsWidth = (3 * LEVEL_BUTTON_NORMAL_WIDTH) + (2 * HORIZONTAL_BUTTON_GAP);
+        int startXLevels = (GameConstants.GAME_WIDTH - totalLevelsWidth) / 2;
+        int startYLevels = levelsTitleSignY + levelsTitleSignHeight + 100; // Debajo del título
 
-        gbc.gridx = 0; add(level1Label, gbc);
-        gbc.gridx = 1; add(level2Label, gbc);
-        gbc.gridx = 2; add(level3Label, gbc);
+        for (int i = 0; i < 3; i++) {
+            levelButtonAreas[i] = new Rectangle(
+                    startXLevels + i * (LEVEL_BUTTON_NORMAL_WIDTH + HORIZONTAL_BUTTON_GAP),
+                    startYLevels,
+                    LEVEL_BUTTON_NORMAL_WIDTH,
+                    LEVEL_BUTTON_NORMAL_HEIGHT
+            );
+        }
 
-        // Botón de Volver al Menú
-        backButton = new JLabel("Volver al Menú");
-        backButton.setFont(new Font("Arial", Font.PLAIN, 24));
-        backButton.setForeground(Color.WHITE);
-        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        backButton.addMouseListener(new MouseAdapter() {
+        // --- Calcular el área del botón "Volver al Menú" ---
+        int grassHeight = 50;
+        backButtonArea = new Rectangle(
+                (GameConstants.GAME_WIDTH - BACK_BUTTON_WIDTH) / 2,
+                GameConstants.GAME_HEIGHT - grassHeight - BACK_BUTTON_HEIGHT - 30, // Posición arriba del césped
+                BACK_BUTTON_WIDTH,
+                BACK_BUTTON_HEIGHT
+        );
+
+        // --- Añadir MouseListener para interacciones ---
+        addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                gameFrame.setGameState(GameState.MENU);
+                // Manejo de clics en los botones de nivel
+                for (int i = 0; i < levelButtonAreas.length; i++) {
+                    // Para el clic, usamos el área efectiva del botón (agrandada si está en hover)
+                    int currentWidth = (i == hoveredLevelIndex) ? LEVEL_BUTTON_HOVER_WIDTH : LEVEL_BUTTON_NORMAL_WIDTH;
+                    int currentHeight = (i == hoveredLevelIndex) ? LEVEL_BUTTON_HOVER_HEIGHT : LEVEL_BUTTON_NORMAL_HEIGHT;
+                    int currentX = levelButtonAreas[i].x + (LEVEL_BUTTON_NORMAL_WIDTH - currentWidth) / 2;
+                    int currentY = levelButtonAreas[i].y + (LEVEL_BUTTON_NORMAL_HEIGHT - currentHeight) / 2;
+
+                    Rectangle effectiveClickArea = new Rectangle(currentX, currentY, currentWidth, currentHeight);
+                    if (effectiveClickArea.contains(e.getPoint())) {
+                        gameFrame.restartGame(i + 1); // Inicia el nivel (i+1)
+                        return;
+                    }
+                }
+                // Manejo de clic en el botón "Volver al Menú"
+                if (backButtonArea.contains(e.getPoint())) {
+                    gameFrame.setGameState(GameState.MENU); // Vuelve al menú principal
+                }
             }
-            @Override
-            public void mouseEntered(MouseEvent e) { backButton.setForeground(Color.RED); }
-            @Override
-            public void mouseExited(MouseEvent e) { backButton.setForeground(Color.WHITE); }
         });
-        gbc.gridx = 1; // Centrar el botón de volver
-        gbc.gridy = 1; // Debajo de los niveles
-        gbc.insets = new Insets(50, 0, 0, 0); // Espacio superior
-        add(backButton, gbc);
 
-        resetSelection(); // Para asegurar que las etiquetas estén en su estado inicial
-    }
-
-    private JLabel createLevelLabel(String text, int levelNumber) {
-        JLabel label = new JLabel(text);
-        label.setFont(NORMAL_FONT);
-        label.setForeground(Color.WHITE);
-        label.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2)); // Borde blanco
-        label.setOpaque(true);
-        label.setBackground(Color.DARK_GRAY);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setPreferredSize(new Dimension(200, 100)); // Tamaño fijo inicial
-        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        label.addMouseListener(new MouseAdapter() {
+        addMouseMotionListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                label.setFont(HOVER_FONT); // Agrandar
-                // Esto es un truco, preferiblemente recalcular el tamaño con un Layout Manager o revalidar el padre
-                label.setPreferredSize(new Dimension(250, 120)); // Tamaño más grande
-                revalidate(); // Revalida el layout para que el nuevo tamaño se aplique
-                repaint(); // Redibuja
-            }
+            public void mouseMoved(MouseEvent e) {
+                int oldHoveredLevelIndex = hoveredLevelIndex;
+                boolean oldHoveredBackButton = hoveredBackButton;
 
+                // Detectar hover en botones de Nivel
+                hoveredLevelIndex = -1; // Resetear el índice de hover
+                for (int i = 0; i < levelButtonAreas.length; i++) {
+                    // Calculamos el tamaño real del botón si estuviera en hover o no para la detección
+                    int currentWidth = (i == oldHoveredLevelIndex) ? LEVEL_BUTTON_HOVER_WIDTH : LEVEL_BUTTON_NORMAL_WIDTH;
+                    int currentHeight = (i == oldHoveredLevelIndex) ? LEVEL_BUTTON_HOVER_HEIGHT : LEVEL_BUTTON_NORMAL_HEIGHT;
+
+                    // Calculamos la posición real para mantenerlo centrado si se agranda para la detección
+                    int currentX = levelButtonAreas[i].x + (LEVEL_BUTTON_NORMAL_WIDTH - currentWidth) / 2;
+                    int currentY = levelButtonAreas[i].y + (LEVEL_BUTTON_NORMAL_HEIGHT - currentHeight) / 2;
+
+                    Rectangle effectiveRect = new Rectangle(currentX, currentY, currentWidth, currentHeight);
+                    if (effectiveRect.contains(e.getPoint())) {
+                        hoveredLevelIndex = i; // Marcar como el botón sobre el que está el mouse
+                        break;
+                    }
+                }
+
+                // Detectar hover en botón "Volver al Menú" (solo cambiará de color)
+                hoveredBackButton = backButtonArea.contains(e.getPoint());
+
+                // Solo redibujar si el estado de hover ha cambiado para optimizar
+                if (oldHoveredLevelIndex != hoveredLevelIndex || oldHoveredBackButton != hoveredBackButton) {
+                    repaint();
+                }
+            }
+        });
+
+        addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent e) {
-                label.setFont(NORMAL_FONT); // Achicar
-                label.setPreferredSize(new Dimension(200, 100)); // Tamaño original
-                revalidate();
-                repaint();
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                gameFrame.restartGame(levelNumber); // Iniciar el juego con el nivel seleccionado
+                // Cuando el mouse sale del panel, desactiva todos los hovers
+                if (hoveredLevelIndex != -1 || hoveredBackButton) {
+                    hoveredLevelIndex = -1;
+                    hoveredBackButton = false;
+                    repaint();
+                }
             }
         });
-        return label;
     }
 
-    // Método para reiniciar el estado visual de las etiquetas de nivel
+    /**
+     * Dibuja los elementos del panel de selección de niveles.
+     * @param g El objeto Graphics usado para dibujar.
+     */
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+
+        // Mejorar el renderizado
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        // --- Dibujar el fondo de Cielo y Césped ---
+        g2d.setColor(SKY_BLUE);
+        g2d.fillRect(0, 0, GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT); // Cielo
+
+        int grassHeight = 50;
+        g2d.setColor(GRASS_GREEN);
+        g2d.fillRect(0, GameConstants.GAME_HEIGHT - grassHeight, GameConstants.GAME_WIDTH, grassHeight); // Césped
+
+        // --- Dibujar el letrero del título "NIVELES" ---
+        g2d.setColor(TITLE_ORANGE);
+        g2d.fillRect(levelsTitleSignX, levelsTitleSignY, levelsTitleSignWidth, levelsTitleSignHeight);
+        g2d.setColor(Color.BLACK); // Borde
+        g2d.setStroke(new BasicStroke(2));
+        g2d.drawRect(levelsTitleSignX, levelsTitleSignY, levelsTitleSignWidth, levelsTitleSignHeight);
+
+        // Dibujar el texto del título
+        g2d.setColor(Color.BLACK);
+        g2d.setFont(new Font("Arial", Font.BOLD, 70)); // Misma fuente que el MainMenu title
+        drawCenteredString(g2d, "NIVELES", levelsTitleSignX, levelsTitleSignY, levelsTitleSignWidth, levelsTitleSignHeight);
+
+        // --- Dibujar los botones de nivel (Nivel 1, 2, 3) y la línea horizontal que los conecta ---
+        g2d.setColor(SIGN_BROWN.darker());
+        int horizontalLineY = levelButtonAreas[0].y + levelButtonAreas[0].height / 2; // Centro vertical de los botones de nivel
+        int lineThickness = 10; // Grosor de la línea
+
+        // Ajustar el inicio y fin de la línea para que sobrepase un poco los botones laterales
+        int lineStartX = levelButtonAreas[0].x - 20; // Extender 20px a la izquierda del Nivel 1
+        int lineEndX = (levelButtonAreas[2].x + levelButtonAreas[2].width) + 20; // Extender 20px a la derecha del Nivel 3
+        g2d.fillRect(lineStartX, horizontalLineY - lineThickness / 2, lineEndX - lineStartX, lineThickness); // Dibuja la línea principal
+
+        for (int i = 0; i < levelButtonAreas.length; i++) {
+            Rectangle currentArea = levelButtonAreas[i];
+            String levelText = "Nivel " + (i + 1);
+
+            // Ajustar tamaño si está en hover
+            int drawWidth = (i == hoveredLevelIndex) ? LEVEL_BUTTON_HOVER_WIDTH : LEVEL_BUTTON_NORMAL_WIDTH;
+            int drawHeight = (i == hoveredLevelIndex) ? LEVEL_BUTTON_HOVER_HEIGHT : LEVEL_BUTTON_NORMAL_HEIGHT;
+            int drawX = currentArea.x + (LEVEL_BUTTON_NORMAL_WIDTH - drawWidth) / 2; // Mantener centrado
+            int drawY = currentArea.y + (LEVEL_BUTTON_NORMAL_HEIGHT - drawHeight) / 2; // Mantener centrado
+
+            // Dibujar tablón
+            g2d.setColor(SIGN_BROWN);
+            g2d.fillRect(drawX, drawY, drawWidth, drawHeight);
+
+            // Dibujar borde
+            g2d.setColor((i == hoveredLevelIndex) ? Color.CYAN : Color.WHITE);
+            g2d.setStroke(new BasicStroke((i == hoveredLevelIndex) ? 3 : 2));
+            g2d.drawRect(drawX, drawY, drawWidth, drawHeight);
+
+            // Dibujar texto
+            g2d.setColor((i == hoveredLevelIndex) ? Color.CYAN : Color.WHITE);
+            g2d.setFont(new Font("Arial", Font.BOLD, (i == hoveredLevelIndex) ? LEVEL_TEXT_FONT_HOVER_SIZE : LEVEL_TEXT_FONT_NORMAL_SIZE));
+            drawCenteredString(g2d, levelText, drawX, drawY, drawWidth, drawHeight);
+        }
+
+        // --- Dibujar el botón "Volver al Menú" ---
+        // ¡VERIFICADO! NO SE AGRANDA, solo cambia de color
+        int backDrawWidth = BACK_BUTTON_WIDTH;
+        int backDrawHeight = BACK_BUTTON_HEIGHT;
+        int backDrawX = backButtonArea.x;
+        int backDrawY = backButtonArea.y;
+
+        // Dibujar tablón
+        g2d.setColor(SIGN_BROWN);
+        g2d.fillRect(backDrawX, backDrawY, backDrawWidth, backDrawHeight);
+
+        // Dibujar borde
+        g2d.setColor((hoveredBackButton) ? Color.CYAN : Color.WHITE);
+        g2d.setStroke(new BasicStroke((hoveredBackButton) ? 3 : 2));
+        g2d.drawRect(backDrawX, backDrawY, backDrawWidth, backDrawHeight);
+
+        // Dibujar texto
+        g2d.setColor((hoveredBackButton) ? Color.CYAN : Color.WHITE);
+        g2d.setFont(new Font("Arial", Font.BOLD, BACK_BUTTON_FONT_SIZE)); // Siempre el tamaño normal de fuente
+        drawCenteredString(g2d, "Volver al Menú", backDrawX, backDrawY, backDrawWidth, backDrawHeight);
+    }
+
+    /**
+     * Método auxiliar para dibujar una cadena de texto centrada dentro de un rectángulo.
+     */
+    private void drawCenteredString(Graphics2D g2d, String text, int rectX, int rectY, int rectWidth, int rectHeight) {
+        FontMetrics metrics = g2d.getFontMetrics();
+        int x = rectX + (rectWidth - metrics.stringWidth(text)) / 2;
+        int y = rectY + ((rectHeight - metrics.getHeight()) / 2) + metrics.getAscent();
+        g2d.drawString(text, x, y);
+    }
+
+    /**
+     * Este método se llama al resetear la selección de nivel.
+     * Solo necesita forzar un redibujado.
+     */
     public void resetSelection() {
-        level1Label.setFont(NORMAL_FONT);
-        level2Label.setFont(NORMAL_FONT);
-        level3Label.setFont(NORMAL_FONT);
-        level1Label.setPreferredSize(new Dimension(200, 100));
-        level2Label.setPreferredSize(new Dimension(200, 100));
-        level3Label.setPreferredSize(new Dimension(200, 100));
-        revalidate();
+        hoveredLevelIndex = -1;
+        hoveredBackButton = false;
         repaint();
     }
 }
