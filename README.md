@@ -1,4 +1,4 @@
-# Juego de Carros V2 - CAGAROAD
+# Juego de Carros Version 2.0 - CAGAROAD
 
 Este es un juego de carreras de esquivar obstáculos desarrollado en Java Swing para el curso de Programación de Software I de la Universidad Tecnológica de Panamá.
 
@@ -20,7 +20,8 @@ Este es un juego de carreras de esquivar obstáculos desarrollado en Java Swing 
 - Kahil Reyna
 - Mario
 - Rogelin
-- 
 
 ## Profesor:
 - Rodrigo Yángüez
+
+- 
