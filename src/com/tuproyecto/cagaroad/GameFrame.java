@@ -32,11 +32,11 @@ public class GameFrame extends JFrame {
      * Constructor del GameFrame. Configura la ventana y los paneles iniciales.
      */
     public GameFrame() {
-        setTitle("CAGAROAD - El Juego");
+        setTitle("CAGAROAD - Director´s cut");
         setSize(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null); //(esto solo hace que aparezca en el centro de la pantalla el juego
 
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);

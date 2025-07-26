@@ -105,12 +105,6 @@ public class VictoryPanel extends JPanel {
         g2d.setFont(new Font("Arial", Font.BOLD, 20));
         g2d.drawString("WC", bathroomX + (bathroomWidth / 2) - 15, bathroomY + (bathroomHeight / 2) + 30);
 
-        // Dibuja el coche del jugador llegando al baño usando formas geométricas.
-        Color playerColor = gameFrame.getPlayerCarColor();
-        // ¡MODIFICADO! Ajustar la posición Y del coche para que el baño sea visible.
-        // El coche se dibujará 10 píxeles por debajo de la base del baño.
-        int carDrawY = bathroomY + bathroomHeight + 10;
-        drawGenericCar(g2d, playerColor, GameConstants.GAME_WIDTH / 2 - GameConstants.CAR_WIDTH / 2, carDrawY);
     }
 
     /**

@@ -34,7 +34,7 @@ public class LevelSelectPanel extends JPanel {
     private static final int LEVEL_TEXT_FONT_NORMAL_SIZE = 36;
     private static final int LEVEL_TEXT_FONT_HOVER_SIZE = 42; // Tamaño de fuente agrandado
 
-    // ¡VERIFICADO! Tamaño fijo para el botón "Volver al Menú", no se agranda.
+    // Tamaño fijo para el botón "Volver al Menú", pa que no se agrande.
     private static final int BACK_BUTTON_WIDTH = 200; // Más pequeño
     private static final int BACK_BUTTON_HEIGHT = 50; // Más pequeño
     private static final int BACK_BUTTON_FONT_SIZE = 24;
@@ -59,7 +59,7 @@ public class LevelSelectPanel extends JPanel {
         setPreferredSize(new Dimension(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT));
         setLayout(null); // Usamos layout nulo para posicionar manualmente
 
-        // --- Calcular dimensiones y posiciones del título "NIVELES" ---
+        // Calcular dimensiones y posiciones del título "NIVELES"
         Font titleFont = new Font("Arial", Font.BOLD, 70);
         FontMetrics fmTitle = getFontMetrics(titleFont);
         String titleText = "NIVELES";
@@ -68,7 +68,7 @@ public class LevelSelectPanel extends JPanel {
         levelsTitleSignX = (GameConstants.GAME_WIDTH - levelsTitleSignWidth) / 2;
         levelsTitleSignY = 50;
 
-        // --- Calcular las áreas de los botones de nivel (para detección de mouse) ---
+        // Calcular las áreas de los botones de nivel (para detección de mouse)
         levelButtonAreas = new Rectangle[3];
         int totalLevelsWidth = (3 * LEVEL_BUTTON_NORMAL_WIDTH) + (2 * HORIZONTAL_BUTTON_GAP);
         int startXLevels = (GameConstants.GAME_WIDTH - totalLevelsWidth) / 2;
@@ -83,7 +83,7 @@ public class LevelSelectPanel extends JPanel {
             );
         }
 
-        // --- Calcular el área del botón "Volver al Menú" ---
+        // Calcular el área del botón "Volver al Menú"
         int grassHeight = 50;
         backButtonArea = new Rectangle(
                 (GameConstants.GAME_WIDTH - BACK_BUTTON_WIDTH) / 2,
@@ -92,7 +92,7 @@ public class LevelSelectPanel extends JPanel {
                 BACK_BUTTON_HEIGHT
         );
 
-        // --- Añadir MouseListener para interacciones ---
+        // Añadir MouseListener para interacciones
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -178,7 +178,7 @@ public class LevelSelectPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        // --- Dibujar el fondo de Cielo y Césped ---
+        // Dibujar el fondo de Cielo y Césped
         g2d.setColor(SKY_BLUE);
         g2d.fillRect(0, 0, GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT); // Cielo
 

@@ -193,7 +193,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                 Color.YELLOW,
                 Color.CYAN,
                 Color.BLACK,
-                Color.RED // También puedes añadir RED como color de obstáculo
+                Color.RED
         };
         return colors[random.nextInt(colors.length)];
     }

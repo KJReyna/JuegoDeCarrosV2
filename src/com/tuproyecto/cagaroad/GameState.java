@@ -1,6 +1,6 @@
 // com.tuproyecto.cagaroad.GameState.java
 package com.tuproyecto.cagaroad;
-
+// gestionar el cambio de pantallas
 public enum GameState {
     SPLASH,         // Pantalla de presentación
     MENU,           // Menú principal

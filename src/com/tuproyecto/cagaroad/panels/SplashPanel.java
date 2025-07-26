@@ -27,8 +27,8 @@ public class SplashPanel extends JPanel {
     private static final int LOGO_HEIGHT = 120;
     private static final int LOGO_TOP_MARGIN = 20;
 
-    // ¡MODIFICADO! Tamaños de fuente para los textos
-    private static final int MAIN_TITLE_FONT_SIZE = 24; // <-- ¡AJUSTADO: Reducido de 28 a 24!
+    // Tamaños de fuente para los textos
+    private static final int MAIN_TITLE_FONT_SIZE = 24; // <-- (AJUSTADO) Reducido de 28 a 24
     private static final int PROJECT_TITLE_FONT_SIZE = 32;
     private static final int INFO_FONT_SIZE = 18;
 

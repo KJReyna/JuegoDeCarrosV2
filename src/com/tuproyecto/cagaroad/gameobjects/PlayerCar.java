@@ -3,9 +3,6 @@ package com.tuproyecto.cagaroad.gameobjects;
 import com.tuproyecto.cagaroad.utils.GameConstants;
 
 import java.awt.*;
-// Eliminado: import java.awt.image.BufferedImage;
-// Eliminado: import java.io.IOException;
-// Eliminado: import com.tuproyecto.cagaroad.utils.AssetLoader;
 
 /**
  * Representa el coche del jugador en el juego.
@@ -15,7 +12,6 @@ public class PlayerCar {
     private int x, y;
     private Color color;
     private int lane;
-    // Eliminado: private BufferedImage carImage;
 
     /**
      * Constructor del PlayerCar.
@@ -31,13 +27,10 @@ public class PlayerCar {
      */
     public void reset(Color newColor) {
         this.color = newColor;
-        // Eliminado: loadImageForColor(newColor);
         this.lane = GameConstants.NUM_LANES / 2;
         this.x = (GameConstants.GAME_WIDTH / 6) + (lane * GameConstants.LANE_WIDTH) + (GameConstants.LANE_WIDTH / 2) - (GameConstants.CAR_WIDTH / 2);
         this.y = GameConstants.GAME_HEIGHT - GameConstants.CAR_HEIGHT - 50;
     }
-
-    // Eliminado: private void loadImageForColor(Color carColor) {...}
 
     public void moveLeft() {
         if (lane > 0) {
@@ -57,7 +50,7 @@ public class PlayerCar {
      * Dibuja el coche del jugador usando formas geométricas.
      * @param g2d El objeto Graphics2D usado para dibujar.
      */
-    public void draw(Graphics2D g2d) { // Asegúrate de que sea Graphics2D
+    public void draw(Graphics2D g2d) {
         g2d.setColor(color);
         g2d.fillRect(x, y, GameConstants.CAR_WIDTH, GameConstants.CAR_HEIGHT); // Cuerpo del coche
 

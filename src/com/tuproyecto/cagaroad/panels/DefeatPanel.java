@@ -17,7 +17,7 @@ public class DefeatPanel extends JPanel {
 
     private GameFrame gameFrame;
     private JLabel defeatLabel;
-    private JLabel finalScoreLabel; // ¡NUEVO! Etiqueta para el puntaje final
+    private JLabel finalScoreLabel; // Etiqueta para el puntaje final
     private JLabel retryLabel;
     private JLabel backToMenuLabel;
 

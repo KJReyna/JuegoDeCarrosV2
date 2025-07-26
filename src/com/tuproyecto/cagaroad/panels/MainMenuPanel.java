@@ -28,7 +28,6 @@ public class MainMenuPanel extends JPanel {
 
     // Dimensiones y posiciones de los elementos de la señal
     private static final int SIGN_POLE_WIDTH = 20; // Ancho de los postes
-    // Eliminado: SIGN_POLE_HEIGHT_TITLE, ya no hay postes directos debajo del título
 
     // Panel del título de la señal (JLabel)
     private JLabel titleLabel;
@@ -46,7 +45,7 @@ public class MainMenuPanel extends JPanel {
         setPreferredSize(new Dimension(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT));
         setLayout(null); // Usar layout nulo para posicionar manualmente
 
-        // --- Configuración del Título de la Señal (JLabel) ---
+        // Configuración del Título de la Señal (JLabel)
         titleLabel = new JLabel("CAGAROAD");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 70));
         titleLabel.setForeground(Color.BLACK); // Texto negro para el título
@@ -63,7 +62,7 @@ public class MainMenuPanel extends JPanel {
         titleLabel.setBounds(titleSignX, titleSignY, titleSignWidth, titleSignHeight);
         add(titleLabel); // Añade el JLabel del título al panel
 
-        // --- Configuración de los Botones de Opción ---
+        // Configuración de los Botones de Opción
         int buttonWidth = 250;
         int buttonHeight = 50;
         int startYButtons = titleSignY + titleSignHeight + 60; // Posición Y inicial para los botones

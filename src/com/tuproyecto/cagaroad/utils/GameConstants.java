@@ -24,7 +24,7 @@ public class GameConstants {
 
     // Velocidades
     public static final int PLAYER_SPEED = 10; // Velocidad de movimiento lateral del jugador
-    public static final int GAME_SPEED_BASE = 5; // Velocidad base de desplazamiento del camino y enemigos hacia el jugador
+    public static final int GAME_SPEED_BASE = 6; // Velocidad base de desplazamiento del camino y enemigos hacia el jugador
 
     // Configuración del bucle de juego
     public static final int DELAY = 20; // Milisegundos entre cada actualización del juego (aprox. 50 FPS)
@@ -49,5 +49,4 @@ public class GameConstants {
             (int)(BASE_LEVEL_LENGTH * 1.5), // Índice 2: Nivel 2 (50% más largo)
             (int)(BASE_LEVEL_LENGTH * 2.0)  // Índice 3: Nivel 3 (100% más largo)
     };
-    // NOTA: Eliminadas las constantes de nombres de archivos de imagen
 }

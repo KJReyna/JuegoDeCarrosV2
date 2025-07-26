@@ -3,9 +3,6 @@ package com.tuproyecto.cagaroad.gameobjects;
 import com.tuproyecto.cagaroad.utils.GameConstants;
 
 import java.awt.*;
-// Eliminado: import java.awt.image.BufferedImage;
-// Eliminado: import java.io.IOException;
-// Eliminado: import com.tuproyecto.cagaroad.utils.AssetLoader;
 
 /**
  * Representa un coche obstáculo que aparece en el camino.
@@ -14,7 +11,6 @@ import java.awt.*;
 public class ObstacleCar {
     private int x, y;
     private Color color;
-    // Eliminado: private BufferedImage carImage;
 
     /**
      * Constructor del ObstacleCar.
@@ -26,10 +22,7 @@ public class ObstacleCar {
         this.x = x;
         this.y = y;
         this.color = color;
-        // Eliminado: loadImageForColor(color);
     }
-
-    // Eliminado: private void loadImageForColor(Color carColor) {...}
 
     /**
      * Mueve el obstáculo hacia abajo en la pantalla, simulando que el jugador avanza.
@@ -43,7 +36,7 @@ public class ObstacleCar {
      * Dibuja el coche obstáculo usando formas geométricas.
      * @param g2d El objeto Graphics2D usado para dibujar.
      */
-    public void draw(Graphics2D g2d) { // Asegúrate de que sea Graphics2D
+    public void draw(Graphics2D g2d) {
         g2d.setColor(color);
         g2d.fillRect(x, y, GameConstants.CAR_WIDTH, GameConstants.CAR_HEIGHT); // Cuerpo del coche
 
